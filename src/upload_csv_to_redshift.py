@@ -43,5 +43,9 @@ def insert_values(row, columns):
 
 
 def val(row, column):
-    value = row[column].replace("'", "''")
+    value = escape(row[column])
     return f"'{value}'"
+
+
+def escape(value):
+    return value.replace("'", "''").replace('\\', '\\\\')
