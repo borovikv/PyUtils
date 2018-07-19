@@ -19,3 +19,12 @@ def connection(con_url):
 def execute(sql, curs):
     curs.execute(sql)
     return {} if not curs.description else curs.fetchall()
+
+
+def execute_with_connection(con_url, f):
+    conn = connection(con_url)
+    curs = conn.cursor()
+    try:
+        f(curs)
+    finally:
+        conn.close()

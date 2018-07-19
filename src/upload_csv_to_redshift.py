@@ -1,21 +1,21 @@
 import csv
 
+from db_utils import execute_with_connection
 from src.collection_utils import chunks
-from src.db_utils import connection, execute
+from src.db_utils import execute
 from src.execution_utils import log
 
 
 @log
 def upload(file_csv, table, con_url, chunk_size):
-    conn = connection(con_url)
-    curs = conn.cursor()
-    try:
-        rows = read_csv(file_csv)
-        for i, chunk in enumerate(chunks(rows, chunk_size)):
-            print(f'chunk {i}')
-            insert_rows(chunk, curs, table)
-    finally:
-        conn.close()
+    execute_with_connection(con_url, lambda curs: upload_csv(file_csv, table, chunk_size, curs))
+
+
+def upload_csv(file_csv, table, chunk_size, curs):
+    rows = read_csv(file_csv)
+    for i, chunk in enumerate(chunks(rows, chunk_size)):
+        print(f'chunk {i}')
+        insert_rows(chunk, curs, table)
 
 
 def read_csv(file_csv):
